@@ -1,0 +1,173 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="messenger.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:proj="clr-namespace:messenger"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True">
+
+    <!-- Navigation in transition -->
+    <toolkit:TransitionService.NavigationInTransition>
+        <toolkit:NavigationInTransition>
+            <toolkit:NavigationInTransition.Backward>
+                <toolkit:TurnstileTransition Mode="BackwardIn" />
+            </toolkit:NavigationInTransition.Backward>
+            <toolkit:NavigationInTransition.Forward>
+                <toolkit:TurnstileTransition />
+            </toolkit:NavigationInTransition.Forward>
+        </toolkit:NavigationInTransition>
+    </toolkit:TransitionService.NavigationInTransition>
+
+    <!-- Navigation out transition -->
+    <toolkit:TransitionService.NavigationOutTransition>
+        <toolkit:NavigationOutTransition>
+            <toolkit:NavigationOutTransition.Backward>
+                <toolkit:TurnstileTransition Mode="BackwardOut" />
+            </toolkit:NavigationOutTransition.Backward>
+            <toolkit:NavigationOutTransition.Forward>
+                <toolkit:TurnstileTransition Mode="ForwardOut" />
+            </toolkit:NavigationOutTransition.Forward>
+        </toolkit:NavigationOutTransition>
+    </toolkit:TransitionService.NavigationOutTransition>
+
+    <phone:PhoneApplicationPage.Resources>
+        <proj:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </phone:PhoneApplicationPage.Resources>
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- LOCALIZATION NOTE:
+            To localize the displayed strings copy their values to appropriately named
+            keys in the app's neutral language resource file (AppResources.resx) then
+            replace the hard-coded text value between the attributes' quotation marks
+            with the binding clause whose path points to that string name.
+
+            For example:
+
+                Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}"
+
+            This binding points to the template's string resource named "ApplicationTitle".
+
+            Adding supported languages in the Project Properties tab will create a
+            new resx file per language that can carry the translated values of your
+            UI strings. The binding in these examples will cause the value of the
+            attributes to be drawn from the .resx file that matches the
+            CurrentUICulture of the app at run time.
+         -->
+
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="0,0,0,0">
+            <phone:Pivot>
+                <phone:Pivot.Title>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="GenericMessenger"/>
+                        <StackPanel Orientation="Horizontal" Margin="10,0,0,0" >
+                            <TextBlock Text="&#xe200;" FontFamily="Segoe UI Symbol" Foreground="{StaticResource PhoneAccentBrush}" Padding="0" FontSize="16" VerticalAlignment="Center"/>
+                            <TextBlock FontFamily="Segoe WP" Text="4" Foreground="{StaticResource PhoneAccentBrush}" Margin="5,0,0,0" x:Name="Messages"/>
+                        </StackPanel>
+                    </StackPanel>
+                </phone:Pivot.Title>
+                
+                <phone:Pivot.HeaderTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding}" FontFamily="Segoe WP SemiLight" FontSize="48"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </phone:Pivot.HeaderTemplate>
+                <phone:PivotItem Header="все">
+                    <phone:LongListSelector toolkit:TiltEffect.IsTiltEnabled="True" x:Name="AllList" Margin="0,0,-12,0" SelectionChanged="AllList_SelectionChanged">
+                        <phone:LongListSelector.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="{Binding ImageUri}" Stretch="UniformToFill" Width="75" Height="75"/>
+                                    <Rectangle Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                               Visibility="{Binding isOnline, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
+                                               Fill="{StaticResource PhoneAccentBrush}"/>
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                        <TextBlock Text="{Binding Name}" FontFamily="Portable User Interface" Width="400" FontSize="36" TextTrimming="WordEllipsis"/>
+                                        <TextBlock Text="{Binding LastMessage}" 
+                                                   Foreground="{StaticResource PhoneAccentBrush}"
+                                                   TextTrimming="WordEllipsis"
+                                                   Width="400"
+                                                   HorizontalAlignment="Left"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </phone:LongListSelector.ItemTemplate>
+                    </phone:LongListSelector>
+                </phone:PivotItem>
+                <phone:PivotItem Header="личные">
+                    <phone:LongListSelector x:Name="PrivateList" 
+                                            toolkit:TiltEffect.IsTiltEnabled="True" 
+                                            SelectionChanged="AllList_SelectionChanged" 
+                                            Margin="0,0,-12,0">
+                        <phone:LongListSelector.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="{Binding ImageUri}" Stretch="UniformToFill" Width="75" Height="75"/>
+                                    <Rectangle Width="20" Height="20" 
+                                               HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                                               Visibility="{Binding isOnline, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" 
+                                               Fill="{StaticResource PhoneAccentBrush}"/>
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                        <TextBlock Text="{Binding Name}" FontFamily="Portable User Interface" FontSize="36"/>
+                                        <TextBlock Text="{Binding LastMessage}" Foreground="{StaticResource PhoneAccentBrush}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </phone:LongListSelector.ItemTemplate>
+                    </phone:LongListSelector>
+                </phone:PivotItem>
+            </phone:Pivot>
+        </Grid>
+
+        <!--Uncomment to see an alignment grid to help ensure your controls are
+            aligned on common boundaries.  The image has a top margin of -32px to
+            account for the System Tray. Set this to 0 (or remove the margin altogether)
+            if the System Tray is hidden.
+
+            Before shipping remove this XAML and the image itself.-->
+        <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False" />-->
+    </Grid>
+    
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar>
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem x:Name="MeMenuItem" 
+                                              Text="мой профиль" Click="SettingsMenuItem_Click"/>
+                <shell:ApplicationBarMenuItem x:Name="FavoritesMenuItem" 
+                                              Text="избранное" Click="Change1_Click"/>
+                <shell:ApplicationBarMenuItem x:Name="SettingsMenuItem" 
+                                              Text="параметры" Click="SettingsMenuItem_Click"/>
+            </shell:ApplicationBar.MenuItems>
+            <shell:ApplicationBarIconButton IconUri="/Toolkit.Content/feature.search.png" 
+                                            Text="поиск" Click="Change_Click"/>
+            <shell:ApplicationBarIconButton IconUri="/Toolkit.Content/ApplicationBar.Add.png" 
+                                            Text="новый чат" Click="Change_Click"/>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+
+</phone:PhoneApplicationPage>
